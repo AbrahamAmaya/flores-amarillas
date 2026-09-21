@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flores Amarillas Especiales 🌻</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center top, #2b1704 0%, #150a01 50%, #0a0400 100%);
+            color: #fef08a;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-cursive { font-family: 'Dancing Script', cursive; }
+
+        /* Custom Glassmorphism UI Panels */
+        .glass-card {
+            background: rgba(28, 16, 5, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.7), 0 0 25px rgba(234, 179, 8, 0.12);
+        }
+
+        .glass-card-gold {
+            background: linear-gradient(135deg, rgba(45, 26, 4, 0.9) 0%, rgba(18, 9, 2, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(253, 224, 71, 0.5);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(250, 204, 21, 0.15);
+        }
+
+        /* Realistic Sway & Glow Animations */
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-2.5deg) scale(1); }
+            50% { transform: rotate(2.5deg) scale(1.02); }
+        }
+
+        .animate-sway {
+            animation: gentleSway 5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.4)); }
+            50% { filter: drop-shadow(0 0 32px rgba(250, 204, 21, 0.85)); }
+        }
+
+        .glow-effect {
+            animation: pulseGlow 3.5s ease-in-out infinite;
+        }
+
+        /* Touch Bloom Sunflower Spawn Effect */
+        @keyframes touchBloom {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-45deg);
+                opacity: 0;
+                filter: drop-shadow(0 0 0px rgba(250, 204, 21, 0));
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1.25) rotate(15deg);
+                opacity: 1;
+                filter: drop-shadow(0 10px 25px rgba(250, 204, 21, 0.85));
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0;
+                filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0));
+            }
+        }
+
+        .bloom-touch-flower {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 130px;
+            height: 130px;
+            animation: touchBloom 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Custom Scrollbars for mobile cards */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes vinylSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin-vinyl {
+            animation: vinylSpin 4s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-amber-400 selection:text-amber-950">
+
+    <!-- Interactive Falling Petals Background Canvas -->
+    <canvas id="petals-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Step 1: Initial Screen (Clean & Minimalist Input - No Names Shown) -->
+    <div id="step-initial" class="fixed inset-0 z-50 flex items-center justify-center p-5 bg-gradient-to-br from-amber-950 via-amber-900 to-black transition-all duration-700">
+        <div class="glass-card-gold w-full max-w-sm rounded-3xl p-8 text-center relative overflow-hidden">
+            
+            <!-- Glowing Header Sunflower Icon -->
+            <div class="w-28 h-28 mx-auto mb-3 animate-sway glow-effect">
+                <svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="pGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fff082"/>
+                            <stop offset="40%" stop-color="#facc15"/>
+                            <stop offset="85%" stop-color="#eab308"/>
+                            <stop offset="100%" stop-color="#ca8a04"/>
+                        </linearGradient>
+                        <radialGradient id="cGrad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#542608"/>
+                            <stop offset="70%" stop-color="#240e02"/>
+                            <stop offset="100%" stop-color="#000000"/>
+                        </radialGradient>
+                    </defs>
+                    <g transform="translate(100, 100)">
+                        <!-- Sunflower Petals Layer -->
+                        <g>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(0)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(22.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(45)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(67.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(90)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(112.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(135)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(157.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(180)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(202.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(225)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(247.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(270)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(292.5)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(315)"/>
+                            <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(337.5)"/>
+                        </g>
+                        <!-- Disk Center -->
+                        <circle cx="0" cy="0" r="42" fill="url(#cGrad)"/>
+                        <circle cx="0" cy="0" r="34" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3" fill="none" opacity="0.6"/>
+                    </g>
+                </svg>
+            </div>
+
+            <h1 class="text-2xl font-playfair font-bold text-amber-200 mb-2">
+                Un detalle especial 💛
+            </h1>
+            <p class="text-amber-100/80 text-xs font-light mb-6 leading-relaxed">
+                Ingresa tu nombre para revelar el regalo preparado especialmente para ti.
+            </p>
+
+            <form onsubmit="handleEnter(event)" class="space-y-4">
+                <input 
+                    type="text" 
+                    id="input-name" 
+                    placeholder="Escribe tu nombre aquí..." 
+                    autocomplete="off"
+                    required
+                    class="w-full px-5 py-3.5 text-center text-amber-100 font-medium placeholder-amber-400/50 bg-black/50 border border-amber-400/50 rounded-2xl focus:outline-none focus:border-yellow-400 transition-all text-base"
+                />
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-amber-950 font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-amber-500/25 active:scale-95 transition-all text-sm tracking-wide flex items-center justify-center gap-2">
+                    <span>Ver mi regalo</span>
+                    <i class="fa-solid fa-sparkles text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Step 2: Main Application Screen -->
+    <div id="step-main" class="hidden relative z-10 min-h-screen flex flex-col justify-between">
+        
+        <!-- Header Controls -->
+        <header class="p-4 flex items-center justify-between max-w-md mx-auto w-full">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl animate-pulse">🌻</span>
+                <span class="font-playfair text-lg font-bold text-amber-200 tracking-wide">
+                    Flores Amarillas
+                </span>
+            </div>
+
+            <!-- Music Player Toggle Button -->
+            <button 
+                onclick="toggleAudio()" 
+                id="music-btn" 
+                class="bg-black/60 border border-amber-400/60 px-3.5 py-1.5 rounded-full shadow-lg text-amber-200 text-xs font-semibold flex items-center gap-2 active:scale-95 transition">
+                <i class="fa-solid fa-compact-disc text-amber-400 text-sm" id="music-icon"></i>
+                <span id="music-text">Floricienta 🎵</span>
+            </button>
+        </header>
+
+        <!-- Main Body Content for Mobile View -->
+        <main class="max-w-md mx-auto w-full px-4 py-2 space-y-5 flex-1">
+            
+            <!-- Welcome Greeting Banner -->
+            <section class="glass-card rounded-3xl p-6 text-center relative overflow-hidden">
+                <span class="text-[10px] uppercase font-bold tracking-widest text-amber-950 bg-amber-400 px-3 py-1 rounded-full mb-3 inline-block shadow-md">
+                    Un Regalo Especial ✨
+                </span>
+                
+                <h2 id="greeting-title" class="text-3xl font-playfair text-yellow-200 font-bold mb-3 leading-tight">
+                    ¡Bienvenida!
+                </h2>
+                
+                <p id="greeting-body" class="text-xs md:text-sm text-amber-100/90 font-light leading-relaxed mb-4">
+                    Cargando mensaje...
+                </p>
+
+                <div class="inline-flex items-center gap-2 text-[11px] text-amber-300 font-medium bg-amber-950/60 px-3.5 py-1.5 rounded-xl border border-amber-400/30">
+                    <i class="fa-solid fa-hand-pointer text-yellow-400 animate-pulse"></i>
+                    <span>Toca la pantalla para hacer brotar girasoles</span>
+                </div>
+            </section>
+
+            <!-- Detailed Giant Bouquet Illustration (Realistic SVG) -->
+            <section class="glass-card rounded-3xl p-6 text-center relative flex flex-col items-center">
+                <h3 class="text-xs uppercase font-bold tracking-widest text-amber-300 mb-1">
+                    Tu Ramo Eterno 🌻
+                </h3>
+
+                <div onclick="touchBouquet()" class="cursor-pointer my-2 relative active:scale-95 transition-transform duration-300 w-full max-w-[300px]">
+                    <svg class="w-full h-80 mx-auto glow-effect animate-sway" viewBox="0 0 320 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Realistic High Definition Petal Gradients -->
+                            <linearGradient id="petalReal1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#fffa88"/>
+                                <stop offset="35%" stop-color="#facc15"/>
+                                <stop offset="75%" stop-color="#eab308"/>
+                                <stop offset="100%" stop-color="#b45309"/>
+                            </linearGradient>
+
+                            <linearGradient id="petalReal2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#fef08a"/>
+                                <stop offset="50%" stop-color="#f59e0b"/>
+                                <stop offset="100%" stop-color="#92400e"/>
+                            </linearGradient>
+
+                            <!-- Sunflower Center Texture -->
+                            <radialGradient id="centerDisk" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#6b21a8"/>
+                                <stop offset="25%" stop-color="#451a03"/>
+                                <stop offset="70%" stop-color="#270e02"/>
+                                <stop offset="100%" stop-color="#000000"/>
+                            </radialGradient>
+
+                            <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#3f6212"/>
+                                <stop offset="50%" stop-color="#65a30d"/>
+                                <stop offset="100%" stop-color="#1e293b"/>
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Bouquet Stems -->
+                        <path d="M160 220 L120 360" stroke="url(#stemGrad)" stroke-width="10" stroke-linecap="round"/>
+                        <path d="M160 220 L160 370" stroke="url(#stemGrad)" stroke-width="11" stroke-linecap="round"/>
+                        <path d="M160 220 L200 360" stroke="url(#stemGrad)" stroke-width="10" stroke-linecap="round"/>
+
+                        <!-- Leaves -->
+                        <path d="M125 270 C90 250, 70 280, 95 310 C115 310, 130 290, 125 270 Z" fill="#4d7c0f"/>
+                        <path d="M195 270 C230 250, 250 280, 225 310 C205 310, 190 290, 195 270 Z" fill="#3f6212"/>
+
+                        <!-- Silk Ribbon Bow -->
+                        <path d="M130 240 C150 248, 170 248, 190 240 L198 285 L160 268 L122 285 Z" fill="#d97706"/>
+                        <path d="M130 240 C150 250, 170 250, 190 240 C178 230, 142 230, 130 240 Z" fill="#fbbf24"/>
+                        <circle cx="160" cy="242" r="9" fill="#b45309"/>
+
+                        <!-- CENTER GIANT SUNFLOWER -->
+                        <g transform="translate(160, 135)">
+                            <!-- Layer 1 Petals -->
+                            <g>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(0)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(20)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(40)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(60)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(80)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(100)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(120)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(140)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(160)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(180)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(200)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(220)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(240)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(260)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(280)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(300)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(320)"/>
+                                <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(340)"/>
+                            </g>
+                            <!-- Layer 2 Dense Inner Petals -->
+                            <g transform="scale(0.82)">
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(10)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(50)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(90)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(130)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(170)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(210)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(250)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(290)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(330)"/>
+                            </g>
+                            <!-- Seed Center -->
+                            <circle cx="0" cy="0" r="40" fill="url(#centerDisk)"/>
+                            <circle cx="0" cy="0" r="30" stroke="#facc15" stroke-width="1.8" stroke-dasharray="4,3" fill="none" opacity="0.6"/>
+                        </g>
+
+                        <!-- LEFT MEDIUM SUNFLOWER -->
+                        <g transform="translate(85, 150) scale(0.68)">
+                            <g>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(0)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(30)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(60)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(90)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(120)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(150)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(180)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(210)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(240)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(270)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(300)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(330)"/>
+                            </g>
+                            <circle cx="0" cy="0" r="32" fill="url(#centerDisk)"/>
+                        </g>
+
+                        <!-- RIGHT MEDIUM SUNFLOWER -->
+                        <g transform="translate(235, 150) scale(0.68)">
+                            <g>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(15)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(45)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(75)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(105)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(135)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(165)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(195)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(225)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(255)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(285)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(315)"/>
+                                <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal2)" transform="rotate(345)"/>
+                            </g>
+                            <circle cx="0" cy="0" r="32" fill="url(#centerDisk)"/>
+                        </g>
+
+                        <!-- Golden Dust Sparkles -->
+                        <circle cx="70" cy="50" r="3" fill="#fffa88"/>
+                        <circle cx="250" cy="60" r="3.5" fill="#facc15"/>
+                        <circle cx="160" cy="25" r="4" fill="#fde047"/>
+                    </svg>
+                </div>
+
+                <p class="text-[11px] text-amber-200/80 italic font-medium">
+                    "Toca el ramo para llenar tu pantalla de destellos"
+                </p>
+            </section>
+
+            <!-- Deep Emotional Letter Envelope Section -->
+            <section class="glass-card rounded-3xl p-6 relative overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">💌</span>
+                        <h3 class="font-playfair font-bold text-amber-200 text-base">
+                            Carta Especial de Amistad
+                        </h3>
+                    </div>
+                    <button 
+                        onclick="toggleLetter()" 
+                        id="letter-toggle-btn"
+                        class="text-xs font-bold text-amber-950 bg-gradient-to-r from-amber-300 to-yellow-400 px-4 py-1.5 rounded-full shadow-md active:scale-95 transition">
+                        Abrir carta
+                    </button>
+                </div>
+
+                <div id="letter-content" class="hidden mt-4 pt-4 border-t border-amber-400/30 space-y-4">
+                    <p id="letter-text" class="font-cursive text-xl text-amber-100 leading-relaxed whitespace-pre-line">
+                        Cargando dedicatoria...
+                    </p>
+                </div>
+            </section>
+
+            <!-- Warm Cards & Quotes -->
+            <section class="space-y-2">
+                <h3 class="text-xs uppercase font-bold tracking-widest text-amber-300 px-1">
+                    Pensamientos de Primavera ✨
+                </h3>
+
+                <div class="flex gap-3 overflow-x-auto no-scrollbar py-2 -mx-4 px-4">
+                    <div class="glass-card min-w-[230px] max-w-[230px] p-4 rounded-2xl flex-shrink-0">
+                        <span class="text-xl mb-1 block">🌻</span>
+                        <h4 class="font-bold text-amber-200 text-xs mb-1">Cero Espectadoras</h4>
+                        <p class="text-[11px] text-amber-100/80 leading-normal">
+                            No estás en este mundo para ver la felicidad de lejos. Estás para vivirla y protagonizarla.
+                        </p>
+                    </div>
+
+                    <div class="glass-card min-w-[230px] max-w-[230px] p-4 rounded-2xl flex-shrink-0">
+                        <span class="text-xl mb-1 block">🌼</span>
+                        <h4 class="font-bold text-amber-200 text-xs mb-1">Cualquier Día Es Especial</h4>
+                        <p class="text-[11px] text-amber-100/80 leading-normal">
+                            No hace falta una fecha específica en el calendario para recordarte lo infinitamente valiosa que eres.
+                        </p>
+                    </div>
+
+                    <div class="glass-card min-w-[230px] max-w-[230px] p-4 rounded-2xl flex-shrink-0">
+                        <span class="text-xl mb-1 block">💛</span>
+                        <h4 class="font-bold text-amber-200 text-xs mb-1">Flores Que Nunca Se Marchitan</h4>
+                        <p class="text-[11px] text-amber-100/80 leading-normal">
+                            Un detalle digital impregnado de cariño para iluminar tu día siempre que entres aquí.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="p-5 text-center text-[11px] text-amber-200/60 font-medium">
+            Con todo el cariño del mundo para ti 💛
+        </footer>
+
+    </div>
+
+    <!-- Hidden MP3 Audio Element -->
+    <audio id="floricienta-audio" loop preload="auto">
+        <source src="https://ia801503.us.archive.org/15/items/floricienta-flores-amarillas/Floricienta%20-%20Flores%20Amarillas.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Deep, Emotional Personalized Letters with "Para ti, mi amiga" greeting for Ariana, Sarai, Brisa and generic visitors
+        const personalizedContent = {
+            "ariana": {
+                title: "Para ti, mi amiga Ariana ✨🌻",
+                body: "Ariana, hoy las flores amarillas florecen radiantes exclusivamente para ti, para recordarte lo brillante, alegre e increíblemente especial que eres.",
+                letter: `Para ti, mi amiga Ariana:
+
+Cualquier día es especial para decirte lo mucho que te quiero, pero hoy quería dedicarte estas flores amarillas para recordarte que ¡NUNCA serás espectadora! ✨
+
+Tú no naciste para mirar la vida desde lejos ni para ver cómo otros son felices. Naciste para ser la gran protagonista de tu propia historia, para brillar con luz propia y para llenar de alegría cada lugar al que llegas.
+
+Gracias por tu amistad sincera, por tu risa contagiosa, por tu empatía y por estar presente en los momentos que importan. Mereces todas las flores del universo, miles de momentos hermosos y el cariño más puro que la vida pueda ofrecerte.
+
+Que este ramo digital te recuerde siempre lo infinitamente valiosa que eres para mí y para todos los que tenemos la fortuna de tenerte cerca. ¡Te quiero muchísimo, Ariana! 💛`
+            },
+            "sarai": {
+                title: "Para ti, mi amiga Sarai 🌼✨",
+                body: "Sarai, que la energía cálida, pura y dorada de estas flores llene tu vida de luz, paz y momentos verdaderamente inolvidables.",
+                letter: `Para ti, mi amiga Sarai:
+
+Cualquier día es especial para decirte lo mucho que te quiero, pero hoy quería regalarte este rinconcito amarillo para recordarte que ¡NUNCA serás espectadora! 🌟
+
+Quería consentirte y sacarte una enorme sonrisa porque te mereces todo lo bonito de este mundo. Tu presencia es como un rayito de sol en días nublados; tienes una luz incondicional y un corazón tan noble que hace que la vida de quienes te rodean sea mucho más linda.
+
+Gracias por cada conversación, por tu lealtad, por tu apoyo dulce y por ser una amiga tan increíble. Este ramo de flores amarillas jamás se va a marchitar, igual que mi cariño por ti. Nunca olvides lo única que eres y el lugar tan especial que ocupas en mi vida.
+
+¡Te envío un abrazo gigante lleno de luz y felicidad, Sarai! 💛`
+            },
+            "brisa": {
+                title: "Para ti, mi amiga Brisa 🍃🌻",
+                body: "Brisa, igual que una brisa fresca en primavera, tu amistad transmite paz, alegría y una calidez incomparable.",
+                letter: `Para ti, mi amiga Brisa:
+
+Cualquier día es especial para decirte lo mucho que te quiero, pero hoy quería darte esta sorpresa para recordarte bien fuerte que ¡NUNCA serás espectadora! ✨
+
+Tu nombre refleja la tranquilidad que traes a mi vida, y tus risas compartidas son recuerdos que guardo con enorme cariño. No estás para conformarte con poco ni para ver la vida pasar; estás para florecer en grande, cumplir tus sueños y ser inmensamente feliz.
+
+Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo digital repleto de los girasoles más dorados del universo para recordarte siempre que mereces ser amada, valorada y rodeada de cosas hermosas.
+
+¡Gracias por existir y por ser una persona tan maravillosa en mi vida, Brisa! 💛`
+            }
+        };
+
+        let isAudioPlaying = false;
+        let audioCtx = null;
+        let synthTimer = null;
+
+        // --- CANVAS PETALS FALLING PHYSICS ---
+        const canvas = document.getElementById('petals-canvas');
+        const ctx = canvas.getContext('2d');
+        let petals = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Petal {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.size = Math.random() * 12 + 10;
+                this.speedY = Math.random() * 1.6 + 0.9;
+                this.speedX = Math.random() * 1.2 - 0.6;
+                this.rotation = Math.random() * 360;
+                this.rotSpeed = (Math.random() - 0.5) * 2;
+                this.color = ['#facc15', '#f59e0b', '#fef08a', '#fbbf24', '#fde047'][Math.floor(Math.random() * 5)];
+                this.opacity = Math.random() * 0.6 + 0.4;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.01) + this.speedX;
+                this.rotation += this.rotSpeed;
+                if (this.y > canvas.height + 20) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size / 2);
+                ctx.bezierCurveTo(this.size / 2, -this.size / 4, this.size / 2, this.size / 4, 0, this.size / 2);
+                ctx.bezierCurveTo(-this.size / 2, this.size / 4, -this.size / 2, -this.size / 4, 0, -this.size / 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 40; i++) {
+            petals.push(new Petal());
+        }
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animatePetals);
+        }
+        animatePetals();
+
+        // --- ENTRY FORM HANDLER ---
+        function handleEnter(e) {
+            e.preventDefault();
+            const input = document.getElementById('input-name');
+            const rawName = input.value.trim();
+            if (!rawName) return;
+
+            const normalized = rawName.toLowerCase();
+            const data = personalizedContent[normalized] || {
+                title: `Para ti, mi amiga ${rawName} ✨🌻`,
+                body: `${rawName}, hoy las flores amarillas florecen especialmente para ti, para llenar tu día de luz y recuerdos hermosos.`,
+                letter: `Para ti, mi amiga ${rawName}:\n\nCualquier día es especial para decirte lo mucho que te quiero, pero hoy quería darte esta linda sorpresa para recordarte que ¡NUNCA serás espectadora! ✨\n\nMereces ser protagonista de cosas bellas, recibir flores que nunca se marchiten y estar rodeada de felicidad, cariño y buenos momentos.\n\n¡Gracias por ser parte de mi vida y por compartir tu luz! 💛`
+            };
+
+            document.getElementById('greeting-title').innerText = data.title;
+            document.getElementById('greeting-body').innerText = data.body;
+            document.getElementById('letter-text').innerText = data.letter;
+
+            const stepInitial = document.getElementById('step-initial');
+            const stepMain = document.getElementById('step-main');
+
+            stepInitial.style.opacity = '0';
+            setTimeout(() => {
+                stepInitial.style.display = 'none';
+                stepMain.classList.remove('hidden');
+
+                // Gold confetti celebration burst
+                confetti({
+                    particleCount: 100,
+                    spread: 85,
+                    origin: { y: 0.6 },
+                    colors: ['#facc15', '#f59e0b', '#fde047', '#fbbf24']
+                });
+
+                startMusic();
+            }, 600);
+        }
+
+        // --- INTERACTIVE TOUCH FLOWER BLOOM ---
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('#step-initial')) {
+                return;
+            }
+            spawnTouchFlower(e.clientX, e.clientY);
+        });
+
+        function spawnTouchFlower(x, y) {
+            const container = document.createElement('div');
+            container.className = 'bloom-touch-flower select-none';
+            container.style.left = `${x}px`;
+            container.style.top = `${y}px`;
+
+            container.innerHTML = `
+                <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-2xl">
+                    <g transform="translate(50, 50)">
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#fff082" transform="rotate(0)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(22.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#f59e0b" transform="rotate(45)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(67.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#fff082" transform="rotate(90)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(112.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#f59e0b" transform="rotate(135)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(157.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#fff082" transform="rotate(180)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(202.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#f59e0b" transform="rotate(225)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(247.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#fff082" transform="rotate(270)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(292.5)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#f59e0b" transform="rotate(315)"/>
+                        <path d="M0 -42 C-7 -20, 7 -20, 0 -42 Z" fill="#facc15" transform="rotate(337.5)"/>
+                        <circle cx="0" cy="0" r="18" fill="#451a03"/>
+                        <circle cx="0" cy="0" r="14" fill="#170d02"/>
+                    </g>
+                </svg>
+            `;
+
+            document.body.appendChild(container);
+            playSynthChime();
+
+            setTimeout(() => { container.remove(); }, 1500);
+        }
+
+        function touchBouquet() {
+            confetti({
+                particleCount: 65,
+                spread: 75,
+                origin: { y: 0.45 },
+                colors: ['#facc15', '#f59e0b', '#fbbf24']
+            });
+            playSynthChime();
+        }
+
+        function toggleLetter() {
+            const content = document.getElementById('letter-content');
+            const btn = document.getElementById('letter-toggle-btn');
+
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                btn.innerText = "Cerrar carta";
+                playSynthChime();
+            } else {
+                content.classList.add('hidden');
+                btn.innerText = "Abrir carta";
+            }
+        }
+
+        // --- MUSIC PLAYER & SYNTH HYBRID CONTROLLER ---
+        function startMusic() {
+            const audio = document.getElementById('floricienta-audio');
+            const icon = document.getElementById('music-icon');
+            const text = document.getElementById('music-text');
+
+            audio.volume = 0.65;
+            audio.play().then(() => {
+                isAudioPlaying = true;
+                icon.className = "fa-solid fa-compact-disc text-amber-400 animate-spin-vinyl text-sm";
+                text.innerText = "Sonando 🎵";
+            }).catch(() => {
+                startSynthMelody();
+            });
+        }
+
+        function toggleAudio() {
+            const audio = document.getElementById('floricienta-audio');
+            const icon = document.getElementById('music-icon');
+            const text = document.getElementById('music-text');
+
+            if (isAudioPlaying) {
+                audio.pause();
+                stopSynthMelody();
+                isAudioPlaying = false;
+                icon.className = "fa-solid fa-compact-disc text-amber-400 text-sm";
+                text.innerText = "Floricienta 🎵";
+            } else {
+                audio.play().then(() => {
+                    isAudioPlaying = true;
+                    icon.className = "fa-solid fa-compact-disc text-amber-400 animate-spin-vinyl text-sm";
+                    text.innerText = "Sonando 🎵";
+                }).catch(() => {
+                    startSynthMelody();
+                });
+            }
+        }
+
+        function playSynthChime() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25); // A5
+
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } catch (e) {}
+        }
+
+        // Floricienta "Flores Amarillas" Chorus Melody Synthesizer Backup
+        const floricientaNotes = [
+            { note: 329.63, dur: 0.35 }, { note: 392.00, dur: 0.35 }, { note: 440.00, dur: 0.35 },
+            { note: 493.88, dur: 0.50 }, { note: 440.00, dur: 0.35 }, { note: 392.00, dur: 0.35 }, { note: 440.00, dur: 0.60 },
+            { note: 392.00, dur: 0.35 }, { note: 440.00, dur: 0.35 }, { note: 493.88, dur: 0.50 },
+            { note: 523.25, dur: 0.50 }, { note: 493.88, dur: 0.35 }, { note: 440.00, dur: 0.35 }, { note: 392.00, dur: 0.70 }
+        ];
+
+        function startSynthMelody() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            isAudioPlaying = true;
+            const icon = document.getElementById('music-icon');
+            const text = document.getElementById('music-text');
+            icon.className = "fa-solid fa-compact-disc text-amber-400 animate-spin-vinyl text-sm";
+            text.innerText = "Sonando 🎵";
+
+            let idx = 0;
+            function playStep() {
+                if (!isAudioPlaying) return;
+                const n = floricientaNotes[idx];
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(n.note, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + n.dur);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + n.dur);
+
+                idx = (idx + 1) % floricientaNotes.length;
+                synthTimer = setTimeout(playStep, n.dur * 1000 + 100);
+            }
+            playStep();
+        }
+
+        function stopSynthMelody() {
+            clearTimeout(synthTimer);
+        }
+    </script>
+</body>
+</html>
