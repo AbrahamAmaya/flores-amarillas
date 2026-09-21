@@ -30,7 +30,6 @@
         .font-playfair { font-family: 'Playfair Display', serif; }
         .font-cursive { font-family: 'Dancing Script', cursive; }
 
-        /* Custom Glassmorphism UI Panels */
         .glass-card {
             background: rgba(28, 16, 5, 0.78);
             backdrop-filter: blur(18px);
@@ -46,7 +45,6 @@
             box-shadow: 0 12px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(250, 204, 21, 0.15);
         }
 
-        /* Realistic Sway & Glow Animations */
         @keyframes gentleSway {
             0%, 100% { transform: rotate(-2.5deg) scale(1); }
             50% { transform: rotate(2.5deg) scale(1.02); }
@@ -66,12 +64,10 @@
             animation: pulseGlow 3.5s ease-in-out infinite;
         }
 
-        /* Touch Bloom Sunflower Spawn Effect */
         @keyframes touchBloom {
             0% {
                 transform: translate(-50%, -50%) scale(0) rotate(-45deg);
                 opacity: 0;
-                filter: drop-shadow(0 0 0px rgba(250, 204, 21, 0));
             }
             60% {
                 transform: translate(-50%, -50%) scale(1.25) rotate(15deg);
@@ -81,7 +77,6 @@
             100% {
                 transform: translate(-50%, -50%) scale(1) rotate(0deg);
                 opacity: 0;
-                filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0));
             }
         }
 
@@ -94,7 +89,15 @@
             animation: touchBloom 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Custom Scrollbars for mobile cards */
+        @keyframes shakeErr {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shakeErr 0.4s ease-in-out;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -112,11 +115,10 @@
     <!-- Interactive Falling Petals Background Canvas -->
     <canvas id="petals-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
 
-    <!-- Step 1: Initial Screen (Clean & Minimalist Input - No Names Shown) -->
+    <!-- Step 1: Initial Screen -->
     <div id="step-initial" class="fixed inset-0 z-50 flex items-center justify-center p-5 bg-gradient-to-br from-amber-950 via-amber-900 to-black transition-all duration-700">
-        <div class="glass-card-gold w-full max-w-sm rounded-3xl p-8 text-center relative overflow-hidden">
+        <div id="card-box" class="glass-card-gold w-full max-w-sm rounded-3xl p-8 text-center relative overflow-hidden">
             
-            <!-- Glowing Header Sunflower Icon -->
             <div class="w-28 h-28 mx-auto mb-3 animate-sway glow-effect">
                 <svg viewBox="0 0 200 200" class="w-full h-full">
                     <defs>
@@ -133,7 +135,6 @@
                         </radialGradient>
                     </defs>
                     <g transform="translate(100, 100)">
-                        <!-- Sunflower Petals Layer -->
                         <g>
                             <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(0)"/>
                             <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(22.5)"/>
@@ -152,7 +153,6 @@
                             <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(315)"/>
                             <path d="M0 -90 C-14 -50, 14 -50, 0 -90 Z" fill="url(#pGrad)" transform="rotate(337.5)"/>
                         </g>
-                        <!-- Disk Center -->
                         <circle cx="0" cy="0" r="42" fill="url(#cGrad)"/>
                         <circle cx="0" cy="0" r="34" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3" fill="none" opacity="0.6"/>
                     </g>
@@ -162,19 +162,24 @@
             <h1 class="text-2xl font-playfair font-bold text-amber-200 mb-2">
                 Un detalle especial 💛
             </h1>
-            <p class="text-amber-100/80 text-xs font-light mb-6 leading-relaxed">
-                Ingresa tu nombre para revelar el regalo preparado especialmente para ti.
+            <p class="text-amber-100/80 text-xs font-light mb-4 leading-relaxed">
+                Ingresa tu nombre para revelar la sorpresa preparada especialmente para ti.
             </p>
 
             <form onsubmit="handleEnter(event)" class="space-y-4">
-                <input 
-                    type="text" 
-                    id="input-name" 
-                    placeholder="Escribe tu nombre aquí..." 
-                    autocomplete="off"
-                    required
-                    class="w-full px-5 py-3.5 text-center text-amber-100 font-medium placeholder-amber-400/50 bg-black/50 border border-amber-400/50 rounded-2xl focus:outline-none focus:border-yellow-400 transition-all text-base"
-                />
+                <div>
+                    <input 
+                        type="text" 
+                        id="input-name" 
+                        placeholder="Escribe tu nombre aquí..." 
+                        autocomplete="off"
+                        required
+                        class="w-full px-5 py-3.5 text-center text-amber-100 font-medium placeholder-amber-400/50 bg-black/50 border border-amber-400/50 rounded-2xl focus:outline-none focus:border-yellow-400 transition-all text-base"
+                    />
+                    <p id="error-msg" class="hidden text-red-400 text-xs font-medium mt-2 bg-red-950/80 border border-red-500/40 p-2 rounded-xl">
+                        Nombre no encontrado. Esta sorpresa es exclusiva para amigas especiales.
+                    </p>
+                </div>
 
                 <button 
                     type="submit" 
@@ -198,7 +203,6 @@
                 </span>
             </div>
 
-            <!-- Music Player Toggle Button -->
             <button 
                 onclick="toggleAudio()" 
                 id="music-btn" 
@@ -208,10 +212,9 @@
             </button>
         </header>
 
-        <!-- Main Body Content for Mobile View -->
+        <!-- Main Body Content -->
         <main class="max-w-md mx-auto w-full px-4 py-2 space-y-5 flex-1">
             
-            <!-- Welcome Greeting Banner -->
             <section class="glass-card rounded-3xl p-6 text-center relative overflow-hidden">
                 <span class="text-[10px] uppercase font-bold tracking-widest text-amber-950 bg-amber-400 px-3 py-1 rounded-full mb-3 inline-block shadow-md">
                     Un Regalo Especial ✨
@@ -231,7 +234,7 @@
                 </div>
             </section>
 
-            <!-- Detailed Giant Bouquet Illustration (Realistic SVG) -->
+            <!-- Bouquet SVG -->
             <section class="glass-card rounded-3xl p-6 text-center relative flex flex-col items-center">
                 <h3 class="text-xs uppercase font-bold tracking-widest text-amber-300 mb-1">
                     Tu Ramo Eterno 🌻
@@ -240,7 +243,6 @@
                 <div onclick="touchBouquet()" class="cursor-pointer my-2 relative active:scale-95 transition-transform duration-300 w-full max-w-[300px]">
                     <svg class="w-full h-80 mx-auto glow-effect animate-sway" viewBox="0 0 320 380" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <!-- Realistic High Definition Petal Gradients -->
                             <linearGradient id="petalReal1" x1="0%" y1="0%" x2="0%" y2="100%">
                                 <stop offset="0%" stop-color="#fffa88"/>
                                 <stop offset="35%" stop-color="#facc15"/>
@@ -254,7 +256,6 @@
                                 <stop offset="100%" stop-color="#92400e"/>
                             </linearGradient>
 
-                            <!-- Sunflower Center Texture -->
                             <radialGradient id="centerDisk" cx="50%" cy="50%" r="50%">
                                 <stop offset="0%" stop-color="#6b21a8"/>
                                 <stop offset="25%" stop-color="#451a03"/>
@@ -269,23 +270,19 @@
                             </linearGradient>
                         </defs>
 
-                        <!-- Bouquet Stems -->
                         <path d="M160 220 L120 360" stroke="url(#stemGrad)" stroke-width="10" stroke-linecap="round"/>
                         <path d="M160 220 L160 370" stroke="url(#stemGrad)" stroke-width="11" stroke-linecap="round"/>
                         <path d="M160 220 L200 360" stroke="url(#stemGrad)" stroke-width="10" stroke-linecap="round"/>
 
-                        <!-- Leaves -->
                         <path d="M125 270 C90 250, 70 280, 95 310 C115 310, 130 290, 125 270 Z" fill="#4d7c0f"/>
                         <path d="M195 270 C230 250, 250 280, 225 310 C205 310, 190 290, 195 270 Z" fill="#3f6212"/>
 
-                        <!-- Silk Ribbon Bow -->
                         <path d="M130 240 C150 248, 170 248, 190 240 L198 285 L160 268 L122 285 Z" fill="#d97706"/>
                         <path d="M130 240 C150 250, 170 250, 190 240 C178 230, 142 230, 130 240 Z" fill="#fbbf24"/>
                         <circle cx="160" cy="242" r="9" fill="#b45309"/>
 
                         <!-- CENTER GIANT SUNFLOWER -->
                         <g transform="translate(160, 135)">
-                            <!-- Layer 1 Petals -->
                             <g>
                                 <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(0)"/>
                                 <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(20)"/>
@@ -306,7 +303,6 @@
                                 <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal1)" transform="rotate(320)"/>
                                 <path d="M0 -88 C-15 -45, 15 -45, 0 -88 Z" fill="url(#petalReal2)" transform="rotate(340)"/>
                             </g>
-                            <!-- Layer 2 Dense Inner Petals -->
                             <g transform="scale(0.82)">
                                 <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(10)"/>
                                 <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(50)"/>
@@ -318,7 +314,6 @@
                                 <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(290)"/>
                                 <path d="M0 -80 C-12 -40, 12 -40, 0 -80 Z" fill="url(#petalReal1)" transform="rotate(330)"/>
                             </g>
-                            <!-- Seed Center -->
                             <circle cx="0" cy="0" r="40" fill="url(#centerDisk)"/>
                             <circle cx="0" cy="0" r="30" stroke="#facc15" stroke-width="1.8" stroke-dasharray="4,3" fill="none" opacity="0.6"/>
                         </g>
@@ -361,7 +356,6 @@
                             <circle cx="0" cy="0" r="32" fill="url(#centerDisk)"/>
                         </g>
 
-                        <!-- Golden Dust Sparkles -->
                         <circle cx="70" cy="50" r="3" fill="#fffa88"/>
                         <circle cx="250" cy="60" r="3.5" fill="#facc15"/>
                         <circle cx="160" cy="25" r="4" fill="#fde047"/>
@@ -373,7 +367,7 @@
                 </p>
             </section>
 
-            <!-- Deep Emotional Letter Envelope Section -->
+            <!-- Letter Section -->
             <section class="glass-card rounded-3xl p-6 relative overflow-hidden">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
@@ -397,7 +391,7 @@
                 </div>
             </section>
 
-            <!-- Warm Cards & Quotes -->
+            <!-- Cards -->
             <section class="space-y-2">
                 <h3 class="text-xs uppercase font-bold tracking-widest text-amber-300 px-1">
                     Pensamientos de Primavera ✨
@@ -438,60 +432,39 @@
 
     </div>
 
-    <!-- Hidden MP3 Audio Element -->
+    <!-- MP3 Audio -->
     <audio id="floricienta-audio" loop preload="auto">
         <source src="https://ia801503.us.archive.org/15/items/floricienta-flores-amarillas/Floricienta%20-%20Flores%20Amarillas.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // Deep, Emotional Personalized Letters with "Para ti, mi amiga" greeting for Ariana, Sarai, Brisa and generic visitors
         const personalizedContent = {
             "ariana": {
                 title: "Para ti, mi amiga Ariana ✨🌻",
                 body: "Ariana, hoy las flores amarillas florecen radiantes exclusivamente para ti, para recordarte lo brillante, alegre e increíblemente especial que eres.",
-                letter: `Para ti, mi amiga Ariana:
-
-Cualquier día es especial para decirte lo mucho que te quiero, pero hoy quería dedicarte estas flores amarillas para recordarte que ¡NUNCA serás espectadora! ✨
-
-Tú no naciste para mirar la vida desde lejos ni para ver cómo otros son felices. Naciste para ser la gran protagonista de tu propia historia, para brillar con luz propia y para llenar de alegría cada lugar al que llegas.
-
-Gracias por tu amistad sincera, por tu risa contagiosa, por tu empatía y por estar presente en los momentos que importan. Mereces todas las flores del universo, miles de momentos hermosos y el cariño más puro que la vida pueda ofrecerte.
-
-Que este ramo digital te recuerde siempre lo infinitamente valiosa que eres para mí y para todos los que tenemos la fortuna de tenerte cerca. ¡Te quiero muchísimo, Ariana! 💛`
+                letter: `Para ti, mi amiga Ariana:\n\nCualquier día es especial para decirte lo mucho que te quiero, pero hoy quería dedicarte estas flores amarillas para recordarte que ¡NUNCA serás espectadora! ✨\n\nTú no naciste para mirar la vida desde lejos ni para ver cómo otros son felices. Naciste para ser la gran protagonista de tu propia historia, para brillar con luz propia y para llenar de alegría cada lugar al que llegas.\n\nGracias por tu amistad sincera, por tu risa contagiosa, por tu empatía y por estar presente en los momentos que importan. Mereces todas las flores del universo, miles de momentos hermosos y el cariño más puro que la vida pueda ofrecerte.\n\nQue este ramo digital te recuerde siempre lo infinitamente valiosa que eres para mí y para todos los que tenemos la fortuna de tenerte cerca. ¡Te quiero muchísimo, Ariana! 💛`
             },
             "sarai": {
                 title: "Para ti, mi amiga Sarai 🌼✨",
                 body: "Sarai, que la energía cálida, pura y dorada de estas flores llene tu vida de luz, paz y momentos verdaderamente inolvidables.",
-                letter: `Para ti, mi amiga Sarai:
-
-Cualquier día es especial para decirte lo mucho que te quiero, pero hoy quería regalarte este rinconcito amarillo para recordarte que ¡NUNCA serás espectadora! 🌟
-
-Quería consentirte y sacarte una enorme sonrisa porque te mereces todo lo bonito de este mundo. Tu presencia es como un rayito de sol en días nublados; tienes una luz incondicional y un corazón tan noble que hace que la vida de quienes te rodean sea mucho más linda.
-
-Gracias por cada conversación, por tu lealtad, por tu apoyo dulce y por ser una amiga tan increíble. Este ramo de flores amarillas jamás se va a marchitar, igual que mi cariño por ti. Nunca olvides lo única que eres y el lugar tan especial que ocupas en mi vida.
-
-¡Te envío un abrazo gigante lleno de luz y felicidad, Sarai! 💛`
+                letter: `Para ti, mi amiga Sarai:\n\nCualquier día es especial para decirte lo mucho que te quiero, pero hoy quería regalarte este rinconcito amarillo para recordarte que ¡NUNCA serás espectadora! 🌟\n\nQuería consentirte y sacarte una enorme sonrisa porque te mereces todo lo bonito de este mundo. Tu presencia es como un rayito de sol en días nublados; tienes una luz incondicional y un corazón tan noble que hace que la vida de quienes te rodean sea mucho más linda.\n\nGracias por cada conversación, por tu lealtad, por tu apoyo dulce y por ser una amiga tan increíble. Este ramo de flores amarillas jamás se va a marchitar, igual que mi cariño por ti. Nunca olvides lo única que eres y el lugar tan especial que ocupas en mi vida.\n\n¡Te envío un abrazo gigante lleno de luz y felicidad, Sarai! 💛`
             },
             "brisa": {
                 title: "Para ti, mi amiga Brisa 🍃🌻",
                 body: "Brisa, igual que una brisa fresca en primavera, tu amistad transmite paz, alegría y una calidez incomparable.",
-                letter: `Para ti, mi amiga Brisa:
-
-Cualquier día es especial para decirte lo mucho que te quiero, pero hoy quería darte esta sorpresa para recordarte bien fuerte que ¡NUNCA serás espectadora! ✨
-
-Tu nombre refleja la tranquilidad que traes a mi vida, y tus risas compartidas son recuerdos que guardo con enorme cariño. No estás para conformarte con poco ni para ver la vida pasar; estás para florecer en grande, cumplir tus sueños y ser inmensamente feliz.
-
-Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo digital repleto de los girasoles más dorados del universo para recordarte siempre que mereces ser amada, valorada y rodeada de cosas hermosas.
-
-¡Gracias por existir y por ser una persona tan maravillosa en mi vida, Brisa! 💛`
+                letter: `Para ti, mi amiga Brisa:\n\nCualquier día es especial para decirte lo mucho que te quiero, pero hoy quería darte esta sorpresa para recordarte bien fuerte que ¡NUNCA serás espectadora! ✨\n\nTu nombre refleja la tranquilidad que traes a mi vida, y tus risas compartidas son recuerdos que guardo con enorme cariño. No estás para conformarte con poco ni para ver la vida pasar; estás para florecer en grande, cumplir tus sueños y ser inmensamente feliz.\n\nGracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo digital repleto de los girasoles más dorados del universo para recordarte siempre que mereces ser amada, valorada y rodeada de cosas hermosas.\n\n¡Gracias por existir y por ser una persona tan maravillosa en mi vida, Brisa! 💛`
             }
         };
+
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
 
         let isAudioPlaying = false;
         let audioCtx = null;
         let synthTimer = null;
 
-        // --- CANVAS PETALS FALLING PHYSICS ---
+        // CANVAS
         const canvas = document.getElementById('petals-canvas');
         const ctx = canvas.getContext('2d');
         let petals = [];
@@ -556,19 +529,28 @@ Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo d
         }
         animatePetals();
 
-        // --- ENTRY FORM HANDLER ---
+        // ENTRY FORM HANDLER
         function handleEnter(e) {
             e.preventDefault();
             const input = document.getElementById('input-name');
+            const errorMsg = document.getElementById('error-msg');
+            const cardBox = document.getElementById('card-box');
+            
             const rawName = input.value.trim();
             if (!rawName) return;
 
-            const normalized = rawName.toLowerCase();
-            const data = personalizedContent[normalized] || {
-                title: `Para ti, mi amiga ${rawName} ✨🌻`,
-                body: `${rawName}, hoy las flores amarillas florecen especialmente para ti, para llenar tu día de luz y recuerdos hermosos.`,
-                letter: `Para ti, mi amiga ${rawName}:\n\nCualquier día es especial para decirte lo mucho que te quiero, pero hoy quería darte esta linda sorpresa para recordarte que ¡NUNCA serás espectadora! ✨\n\nMereces ser protagonista de cosas bellas, recibir flores que nunca se marchiten y estar rodeada de felicidad, cariño y buenos momentos.\n\n¡Gracias por ser parte de mi vida y por compartir tu luz! 💛`
-            };
+            const normalized = removeAccents(rawName.toLowerCase());
+
+            if (!personalizedContent[normalized]) {
+                errorMsg.classList.remove('hidden');
+                cardBox.classList.remove('animate-shake');
+                void cardBox.offsetWidth;
+                cardBox.classList.add('animate-shake');
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
+            const data = personalizedContent[normalized];
 
             document.getElementById('greeting-title').innerText = data.title;
             document.getElementById('greeting-body').innerText = data.body;
@@ -582,7 +564,6 @@ Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo d
                 stepInitial.style.display = 'none';
                 stepMain.classList.remove('hidden');
 
-                // Gold confetti celebration burst
                 confetti({
                     particleCount: 100,
                     spread: 85,
@@ -594,7 +575,6 @@ Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo d
             }, 600);
         }
 
-        // --- INTERACTIVE TOUCH FLOWER BLOOM ---
         document.addEventListener('click', function(e) {
             if (e.target.closest('button') || e.target.closest('input') || e.target.closest('#step-initial')) {
                 return;
@@ -663,7 +643,6 @@ Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo d
             }
         }
 
-        // --- MUSIC PLAYER & SYNTH HYBRID CONTROLLER ---
         function startMusic() {
             const audio = document.getElementById('floricienta-audio');
             const icon = document.getElementById('music-icon');
@@ -710,8 +689,8 @@ Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo d
                 const gain = audioCtx.createGain();
 
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
-                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25); // A5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.25);
 
                 gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
@@ -724,7 +703,6 @@ Gracias por ser esa amiga tan genuina, atenta y especial. Te entrego este ramo d
             } catch (e) {}
         }
 
-        // Floricienta "Flores Amarillas" Chorus Melody Synthesizer Backup
         const floricientaNotes = [
             { note: 329.63, dur: 0.35 }, { note: 392.00, dur: 0.35 }, { note: 440.00, dur: 0.35 },
             { note: 493.88, dur: 0.50 }, { note: 440.00, dur: 0.35 }, { note: 392.00, dur: 0.35 }, { note: 440.00, dur: 0.60 },
